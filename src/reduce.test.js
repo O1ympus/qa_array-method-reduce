@@ -53,8 +53,32 @@ describe('reduce', () => {
 
   it('check for immutability', () => {
     const arr = ['s', 'a'];
+    const copy = [...arr];
     const callBack = jest.fn((res, el) => res + el);
 
-    expect(arr.reduce2(callBack)).not.toEqual(arr);
+    arr.reduce2(callBack);
+
+    expect(arr).toEqual(copy);
+  });
+
+  it('should throw an error when reducing an empty array without '
+  + 'an initial value', () => {
+    const callBack = jest.fn((res, el) => res + el);
+
+    expect(() => [].reduce2(callBack)).toThrow(TypeError);
+  });
+
+  it('callback is not called with correct arguments on each call', () => {
+    const callBack = jest.fn((res, el) => res + el);
+    const arr = [1, 2, 3];
+
+    arr.reduce2(callBack);
+
+    expect(callBack).toHaveBeenCalledTimes(2);
+
+    expect(callBack.mock.calls).toEqual([
+      [1, 2, 1, arr],
+      [3, 3, 2, arr],
+    ]);
   });
 });
